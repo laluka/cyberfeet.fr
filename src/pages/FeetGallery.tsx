@@ -1,34 +1,20 @@
 import React, { useState, useEffect } from 'react';
 
-// Explicitly import all images to ensure we get all 10
-const feetImages = import.meta.glob('/feets/*.jpg', { eager: true });
-
 export function FeetGallery() {
   const [imageList, setImageList] = useState<string[]>([]);
 
   useEffect(() => {
-    // Convert the imported images object to an array of URLs
-    const images = Object.keys(feetImages).map(path => path);
-    
-    // Sort by filename to ensure consistent order
-    images.sort();
-    
-    // Debug: log what images were found
-    console.log('Found images:', images);
-    console.log('Total images found:', images.length);
-    
-    // If we don't have all 10 images, manually add them
-    if (images.length < 10) {
-      const allImagePaths = [];
-      for (let i = 1; i <= 10; i++) {
-        const paddedNumber = String(i).padStart(3, '0');
-        allImagePaths.push(`/feets/${paddedNumber}.jpg`);
-      }
-      console.log('Manually added images:', allImagePaths);
-      setImageList(allImagePaths);
-    } else {
-      setImageList(images);
+    // Generate the list of all 25 images
+    const allImagePaths = [];
+    for (let i = 1; i <= 25; i++) {
+      const paddedNumber = String(i).padStart(3, '0');
+      allImagePaths.push(`/feets/${paddedNumber}.jpg`);
     }
+    
+    console.log('Generated image paths:', allImagePaths);
+    console.log('Total images:', allImagePaths.length);
+    
+    setImageList(allImagePaths);
   }, []);
 
   return (
@@ -44,6 +30,11 @@ export function FeetGallery() {
                 alt={`Feet ${String(index + 1).padStart(3, '0')}`}
                 className="w-full h-64 object-cover"
                 loading="lazy"
+                onError={(e) => {
+                  console.warn(`Failed to load image: ${imagePath}`);
+                  // Optionally hide the broken image or show a placeholder
+                  e.currentTarget.style.display = 'none';
+                }}
               />
             </div>
           ))}
