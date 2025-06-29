@@ -6,7 +6,7 @@ export function FeetGallery() {
   useEffect(() => {
     // Generate the list of all 25 images
     const allImagePaths = [];
-    for (let i = 1; i <= 25; i++) {
+    for (let i = 1; i <= 38; i++) {
       const paddedNumber = String(i).padStart(3, '0');
       allImagePaths.push(`/feets/${paddedNumber}.jpg`);
     }
@@ -20,7 +20,7 @@ export function FeetGallery() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white p-6">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-4xl font-bold text-center mb-8">Feet Gallery</h1>
+        <h1 className="text-4xl font-bold text-center mb-8">Cyber Feet Gallery</h1>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {imageList.map((imagePath, index) => (

@@ -1,4 +1,4 @@
-# Feet Gallery
+# Cyber Feet Gallery
 
 A simple web application to display feet images.
 
