@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Pagination } from '../components/Pagination';
 import { IconButton } from '../components/common/IconButton';
 import { Modal } from '../components/common/Modal';
-import { Shuffle, BookOpen } from 'lucide-react';
+import { Shuffle, BookOpen, ArrowUp, ArrowDown } from 'lucide-react';
 
 export function FeetGallery() {
   const [imageList, setImageList] = useState<string[]>([]);
@@ -10,12 +10,13 @@ export function FeetGallery() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string>('');
   const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
+  const [isNewestFirst, setIsNewestFirst] = useState(true);
   const imagesPerPage = 12;
 
   useEffect(() => {
     // Generate the list of all 38 images
     const allImagePaths = [];
-    for (let i = 1; i <= 38; i++) {
+    for (let i = 1; i <= 39; i++) {
       const paddedNumber = String(i).padStart(3, '0');
       allImagePaths.push(`/feets/${paddedNumber}.jpg`);
     }
@@ -26,11 +27,22 @@ export function FeetGallery() {
     setImageList(allImagePaths);
   }, []);
 
+  // Sort images based on order preference
+  const sortedImages = [...imageList].sort((a, b) => {
+    if (isNewestFirst) {
+      // Newest first (38, 37, 36, ..., 1)
+      return b.localeCompare(a);
+    } else {
+      // Oldest first (1, 2, 3, ..., 38)
+      return a.localeCompare(b);
+    }
+  });
+
   // Calculate pagination
-  const totalPages = Math.ceil(imageList.length / imagesPerPage);
+  const totalPages = Math.ceil(sortedImages.length / imagesPerPage);
   const startIndex = (currentPage - 1) * imagesPerPage;
   const endIndex = startIndex + imagesPerPage;
-  const currentImages = imageList.slice(startIndex, endIndex);
+  const currentImages = sortedImages.slice(startIndex, endIndex);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -39,8 +51,8 @@ export function FeetGallery() {
   };
 
   const handleRandomPick = () => {
-    const randomIndex = Math.floor(Math.random() * imageList.length);
-    const selectedImagePath = imageList[randomIndex];
+    const randomIndex = Math.floor(Math.random() * sortedImages.length);
+    const selectedImagePath = sortedImages[randomIndex];
     setSelectedImage(selectedImagePath);
     setSelectedImageIndex(randomIndex);
     setIsModalOpen(true);
@@ -58,6 +70,17 @@ export function FeetGallery() {
     setSelectedImageIndex(0);
   };
 
+  const toggleOrder = () => {
+    setIsNewestFirst(!isNewestFirst);
+    setCurrentPage(1); // Reset to first page when changing order
+  };
+
+  // Get the actual image number from the path for display
+  const getImageNumber = (imagePath: string) => {
+    const match = imagePath.match(/(\d+)\.jpg$/);
+    return match ? parseInt(match[1]) : 0;
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white p-6">
       <div className="max-w-6xl mx-auto">
@@ -71,6 +94,11 @@ export function FeetGallery() {
             title="Pick Random"
           />
           <IconButton
+            icon={isNewestFirst ? ArrowUp : ArrowDown}
+            onClick={toggleOrder}
+            title={isNewestFirst ? "Show Oldest First" : "Show Newest First"}
+          />
+          <IconButton
             icon={BookOpen}
             href="https://github.com/laluka/cyberfeet.fr"
             title="Contribute"
@@ -80,6 +108,7 @@ export function FeetGallery() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {currentImages.map((imagePath, index) => {
             const actualIndex = startIndex + index;
+            const imageNumber = getImageNumber(imagePath);
             return (
               <div 
                 key={actualIndex} 
@@ -88,7 +117,7 @@ export function FeetGallery() {
               >
                 <img
                   src={imagePath}
-                  alt={`Feet ${String(actualIndex + 1).padStart(3, '0')}`}
+                  alt={`Feet ${String(imageNumber).padStart(3, '0')}`}
                   className="w-full h-64 object-cover"
                   loading="lazy"
                   onError={(e) => {
