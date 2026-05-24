@@ -14,9 +14,9 @@ export function FeetGallery() {
   const imagesPerPage = 12;
 
   useEffect(() => {
-    // Generate the list of all 38 images
+    // Generate the list of all 57 images
     const allImagePaths = [];
-    for (let i = 1; i <= 53; i++) {
+    for (let i = 1; i <= 57; i++) {
       const paddedNumber = String(i).padStart(3, '0');
       allImagePaths.push(`/feets/${paddedNumber}.jpg`);
     }
